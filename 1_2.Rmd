@@ -1,0 +1,25 @@
+---
+title: "1_2"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+require(ggplot2)
+data(diamonds)
+head(diamonds)
+```
+```{r}
+hist(diamonds$carat,main="Carat Histogram",xlab="Carat")
+```
+```{r}
+ggplot(diamonds,aes(x=carat,y=price))+geom_point(aes(color=color))
+```
+```{r}
+ggplot(diamonds,aes(x=carat,y=price))+geom_point(aes(color=color))+facet_grid(cut~clarity)
+```
+```{r}
+library(ggthemes)
+ggplot(diamonds,aes(x=carat,y=price))+geom_point(aes(color=color))+theme_wsj()
+```
+
