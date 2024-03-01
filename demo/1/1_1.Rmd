@@ -120,4 +120,35 @@ ggplot(data=train,aes(x=Embarked,fill=factor(Survived)))+geom_bar(stat='count',p
 logistic <- glm(Survived~Pclass+Sex+Age+SibSp+Parch+Fare+Embarked,data= train[,-1],family='binomial'(link='logit'))
 summary(logistic)
 ```
+```{r}
+set.seed(1029)
+RF <- randomForest(factor(train$Survived)~.,data = train, importance=TRUE)
+RF_tree <- plot(RF)
+tree <- c(1:500)
+OOB <- data.frame(tree,RF_tree)
+
+ggplot(data=OOB,aes(x=tree))+geom_line(aes(y=OOB),colour='black',size=0.8)+geom_line(aes(y =X0),colour='red',size=0.8)+geom_line(aes(y=X1),colour="green",size=0.8)+labs(y="Error.rate")+theme_bw()
+```
+# 5 测试、预测与修正
+## 测试集验证
+```{r}
+logistic2 <- glm(Survived ~Pclass+Sex+Age+SibSp,data = train[, -1],family = 'binomial'(link = 'logit'))
+summary(logistic2)
+test$predict <- predict(logistic2,test,type='response')
+test$predictClass <- NULL
+test$predictClass[test$predict >= 0.5] <- 1
+test$predictClass[test$predict < 0.5] <- 0
+test$predictClass[is.na(test$predict)] <- 0
+Matrix1 <- table(test$Survived,test$predictClass)
+Acc <- sum(diag(Matrix1))/sum(Matrix1)
+Acc
+```
+## 测试集验证2
+```{r}
+pre_ran <- predict(RF,newdata=test)
+obs_p_ran = data.frame(prob=pre_ran,obs=test$Survived) # 将真实值和预测值整合
+Matrix2 <- table(test$Survived,pre_ran) # 输出混淆矩阵
+Acc2 <- sum(diag(Matrix2))/sum(Matrix2)
+Acc2
+```
 
